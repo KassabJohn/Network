@@ -1,0 +1,24 @@
+#Ajouter le rôle DNS :
+Add-WindowsFeature DNS
+
+#Ajouter les outils de gestion graphique et commandes du serveur DNS :
+Add-WindowsFeature RSAT-DNS-Server
+
+#Ajouter la zone de recherche directe primaire :
+Add-DnsServerPrimaryZone -Name contoso.adds -ZoneFile contoso.adds.dns
+
+#Ajouter la zone de recherche inversée primaire :
+Add-DnsServerPrimaryZone -NetworkID 192.168.5/24 -ZoneFile 5.168.192.in-addr.arpa.dns
+
+#Ajouter l'hôte srv-win2019 ayant pour IP 192.168.5.11 (type A) dans la zone de recherche directe primaire :
+Add-DnsServerResourceRecordA -Name srv-win2019 -ZoneName contoso.adds -IPv4Address 192.168.5.11 -CreatePtr
+
+#Ajouter un alias (type CNAME) nommé TestAlias de l'hôte srv-win2019 dans la zone de recherche directe primaire :
+Add-DnsServerResourceRecordCName -Name TestAlias -HostNameAlias srv-win2019.contoso.adds -ZoneName contoso.adds
+
+#Ajouter l'hôte (votre machine physique) ayant pour IP 10.31.?.? (type A) dans la zone de recherche directe primaire :
+Add-DnsServerResourceRecordA -Name hote -ZoneName contoso.adds -IPv4Address IPMACHINEHOTE
+
+
+#Compléments :
+Update-Help

@@ -1,0 +1,100 @@
+﻿Créer 4 VM +  1 VM qui sera le rooter (à partir de la 1ère VM faire 4 clones)
+
+Aller dans " Gestionnaire de reseau 'hote' " de Oracle et créer 2 réseaux (Serveur DHCP activé).
+
+Mettre les 4 VM en "réseau privé hôte" :
+Les 2 premiers avec la 1er réseau créé
+Et les 2 autres avec le 2nd réseau créé
+(Dans 'Avancé' en dessous de réseau privé hôte, changer les adresses avec le p'tit module pour que chaque VM est une addresse différente).
+Mettre le routeur (VM 5 routeur) en "réseau privé hôte" aussi mais sur 2 interfaces :
+1ère interface : réseau privé hôte sur le 1er réseau
+Et activé la 2ème interface : réseau privé hôte sur le 2nd réseau
+-----------------------------------------------------------------------------------------------------------
+
+Dans chaque VM :
+	Commencer par faire un ip addr (ou ip a). Noté pr chaque VM si elles sont en enp0s3 ou enp0s8.
+ 	Faire ensuite un : sudo nano /ect/netplan/01-netcfg.yaml
+	En dessous de dhcp4, écrire => addresses: [192.168.1.1/24] ( à vous de voir pr le / )
+	(PS : on ne termine pas d'IP par un .0/29 ou .0/24)
+	Et mettre dhcp4 en "no"
+	Sortir du fichier
+	Puis sudo netplan apply sur chaque VM
+
+Faire de même avec les 3 autres VM
+METTRE DEUX D A ADDRESSES
+	2e VM -> addresses: [192.168.1.2/24] + dhcp4: no => sudo netplan apply
+	3e VM -> addresses: [192.168.2.1/24] + dhcp4: no => sudo netplan apply
+	4e VM -> addresses: [192.168.2.2/24] + dhcp4: no => sudo netplan apply
+
+!!! Si tout est bien fait vous pouvez ping la VM2 depuis la VM1 (et inversement)
+Et ping la VM4 depuis la VM3 (et inversement).
+Pas possible de ping la VM3 et VM4 depuis les VM1 et VM2 (et inversement) pour le moment. !!!
+
+-----------------------------------------------------------------------------------------------------------
+
+Dans le rooter : 
+	Commencer par faire un sudo nano /etc/sysctl.conf ---> supprimer le "#" devant la ligne
+	net.ipv4.ip_forward=1.
+	Sortir du fichier
+	Faire un sudo nano /etc/netplan/01-netcfg.yaml
+	Faire la même que pr les VM précédentes :
+	-dessous le dhcp4 de enp0s3 mettre addresses: [192.168.1.3/24] + dhcp4: no
+	-encore en dessous de addresses, mettre enp0s8:
+	puis un dhcp4: no
+	puis addresses: [192.168.2.3/24]
+	Sortir du fichier
+	Puis sudo netplan apply sur la VM routeur.
+
+	!!! Si c'est correctement fait, vous pouvez ping toutes les VM depuis le retour !!!
+	
+-----------------------------------------------------------------------------------------------------------
+
+Ajout des routes pr ping les autres VM :
+-Sur la VM1 (qui arrive à ping que la VM2) :
+	Retour sur sudo nano /etc/netplan/01-netcfg.yaml
+	Sous addresses, mettre 
+routes:
+- to: 192.168.2.1 (la VM3)
+  via: 192.168.1.3 (IP du routeur des VM1 et 2)
+- to: 192.168.2.2 (la VM4)
+  via: 192.168.1.3 (IP du routeur des VM1 et 2)
+(PS : le - devant to est OBLIGATOIRE)
+Sortir puis sudo netplan apply
+
+On fait la même avec la VM2 (qui arrive à ping que la VM1) :
+Retour sur sudo nano /etc/netplan/01-netcfg.yaml
+	Sous addresses, mettre 
+routes:
+- to: 192.168.2.1 (la VM3)
+  via: 192.168.1.3 (IP du routeur des VM1 et 2)
+- to: 192.168.2.2 (la VM4)
+  via: 192.168.1.3 (IP du routeur des VM1 et 2)
+(PS : le - devant to est OBLIGATOIRE)
+Sortir puis sudo netplan apply
+
+!!! CA NE SERT A RIEN DE PING LES VM3 ET 4 DEPUIS LES VM1 ET 2 APRES L'AJOUT DES ROUTES, CA NE MARCHE QUE
+SI LES ROUTES SONT DANS LES 2 SENS (NON A SENS UNIQUE) !!!
+
+On passe sur la VM3 (qui arrive à ping que la VM4) :
+Retour sur sudo nano /etc/netplan/01-netcfg.yaml
+	Sous addresses, mettre 
+routes:
+- to: 192.168.1.1 (la VM1)
+  via: 192.168.2.3 (IP du routeur des VM3 et 4)
+- to: 192.168.1.2 (la VM2)
+  via: 192.168.2.3 (IP du routeur des VM3 et 4)
+(PS : le - devant to est OBLIGATOIRE)
+Sortir puis sudo netplan apply
+
+On passe sur la VM4 (qui arrive à ping que la VM3) :
+Retour sur sudo nano /etc/netplan/01-netcfg.yaml
+	Sous addresses, mettre 
+routes:
+- to: 192.168.1.1 (la VM1)
+  via: 192.168.2.3 (IP du routeur des VM3 et 4)
+- to: 192.168.1.2 (la VM2)
+  via: 192.168.2.3 (IP du routeur des VM3 et 4)
+(PS : le - devant to est OBLIGATOIRE)
+Sortir puis sudo netplan apply
+
+!!! MAINTENANT VOUS POUVEZ PING LES VM ENTRENT ELLES !!!

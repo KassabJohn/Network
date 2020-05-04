@@ -1,0 +1,40 @@
+On utilise 3 VM : 2 pour le serveur ns1 et ns2 et 1 pour le client host1
+
+Install bind9 sur toutes les VM
+Configuration de bind9 en mode IPv4 sur les 2 serveurs
+sudo nano /etc/default/bind9
+Et on ajoute -4 dans l'OPTION juste avant le -u
+
+Configuration du DNS main (ns1)
+
+Config fichier options
+sudo nano /etc/bind/named.conf.options
+On ajoute au dessus du block, le block ACL (de confiance) qui permet de définir les requêtes
+DNS qui sont autorisés
+acl "trusted" {
+        192.168.0.1;    # ns1 - can be set to localhost
+        192.168.0.2;    # ns2
+        192.168.1.1;  # host1
+};
+
+What DNS zone records would you have to add in order for a mail server
+(mail.b1net.lab), it should be reachable by smtp.b1net.lab, pop.b1net.lab and
+imap.b1net.lab ?
+
+Pr déclarer un record vers une IP, soit un record A(IPv4) ou AAAA(IPv6) :
+www.master.b1net.lab => www CNAME master.b1net.lab.
+Pr faire imap.b1net.lab il faut faire www CNAME imap.b1net.lab.
+
+What other records are usually associated with mail servers ? (Hint: dkim, spf, dmarc)
+
+Ce sont des records TXT.
+
+What is DNSSEC and could you set it up ?
+
+DNSSEC => Domain Name System Security Extensions : protocole qui permet de regler 
+certains problèmes de sécurité lié au protocole DNS.
+
+What is rDNS and how could you set it up ?
+
+rDNS (Reverse DNS) => c'est l'inverse du DNS, qui sert à convertir une IP en serveur DNS.
+Il inverse l'IP.in-addr.arpa et le stock dans un fichier pour obtenir un nom de domaine.

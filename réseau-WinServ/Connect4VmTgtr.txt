@@ -1,0 +1,41 @@
+Créer 4 VM +  1 VM qui sera le rooter
+Aller dans "gestionnaire de reseau "hote" et créer 2 réseaux
+Mettre les 4 VM en "réseau privé hôte"
+Les 2 premiers avec la 1er réseau créé
+Et les 2 autres avec le 2nd réseau créé
+------------
+Dans chaque VM, 
+	aller dans etc/netplan
+	->sudo nano 01-netcfg.yaml
+	#AU CAS OU  : ls -a dans le fichier t "rm 01-netcfg.yaml.swp"
+	Entre enp0s3 et dhcp4 ; écrire "addresses" [192.168.1.1./29] puis mettre dhcp4 en "no"
+	Puis sudo netplan apply
+
+Faire de même avec les 3 autres VM
+	2e VM -> addresses: [192.168.1.2/29] + dhcp4: no => sudo netplan apply
+	3e VM -> addresses: [192.168.1.8/29] + dhcp4: no => sudo netplan apply
+	4e VM -> addresses: [192.168.1.9/29] + dhcp4: no => sudo netplan apply
+-------------------
+Commencer par faire un sudo nano /etc/sysctl.conf ---> supprimer le "#" devant la ligne
+	net.ipv4.ip_forward=1.
+	Sortir du fichier
+	Faire un sudo nano /etc/netplan/01-netcfg.yaml
+	Faire la même que pr les VM précédentes :
+	-dessous le dhcp4 de enp0s3 mettre addresses: [192.168.1.3/29] + dhcp4: no
+	-encore en dessous de addresses, mettre enp0s8:
+	puis un dhcp4: no
+	puis addresses: [192.168.1.10/29]
+	Sortir du fichier
+	Puis sudo netplan apply sur la VM routeur.
+
+	!!! Si c'est correctement fait, vous pouvez ping toutes les VM depuis le rooter!!!
+----------------
+Retourner dans la VM1 puis taper:
+ip route add [VM3] via [VM1]
+ip route add [VM1] via [VM3]
+ip route add [VM2] via [VM4]
+ip route add [VM4] via [VM2]
+---------------
+Ping l'ip de la VM3 dans la VM1 et inversement
+Ping l'ip de la VM4 dans la VM2 et inversement
+

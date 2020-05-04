@@ -1,0 +1,33 @@
+Reseau Wireshark
+
+ONE.PCAP
+
+What is the ip address of the client that initiates the conv ? 
+131.247.95.216 --> source
+
+Use the 1rst two packets to identify the server that is going to be contacte. List the common name and 3 IP addresses that can be used for the server
+Google -> 64.233.161.99
+	  64.233.161.104
+	  64.233.161.147
+
+What is happening in frames 3, 4 and 5?
+	Le client envoie une segment 		:	SYN au serveur
+	le serveyr lui répond par un segment 	:	ACK/SYN
+	Le client confirme par un segment 	:	ACK (accusé de reception)
+		
+What is happening in frame 6 and 7 ?
+GET -> requête demandée au serveur d'effectuer une action.
+ACK -> Accusé de reception
+
+What is happening in frame 9 and 10 ?
+9 emet un accusé de reception de la frame 8 et la 10 accède a (text/html)
+
+What happend in packet 11?
+
+The client send out a new request in packet 12. This occurs automatically without any action by the user. Why does this occur ?
+
+What is occuring in packets 13 through 22 ?
+
+Explain what happens in packets 23 through 26.
+
+In one sentence describre what the user was doing.

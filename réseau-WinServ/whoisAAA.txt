@@ -1,0 +1,17 @@
+SERVER : 127.0.0.53 ---> adresse serveur DNS
+whois ---> recherche nom de domaine + infos |entité qui détient le nom de domaine | 
+dig A  ---> adresse ip
+dig AAAA ---> IPv6
+dig NS google.com ---> Name Server ---> fournit des requêtes
+
+How can you use dig to get the IP addresses of these servers :
+	dig Ans1.google.com ---> renvoie l'IP dus serveur
+
+dig @IP ns1.google.com
+
+TLD = nom de domaine supérieur .com .fr .net ...
+gTLD = domaine générique
+ccTLD = country code .fr .es .it
+FQDN = Fully qualified domain name ---> google.com
+
+

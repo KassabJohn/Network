@@ -1,0 +1,7 @@
+in the 1rst fex packets, the  	client machine i looking up the common name of a web site 
+to find its IP address. What is the common name of this website. Give 2 IP address of this website ?
+Yahoo.akdns.net | IP -> 216.109.117.106	
+			216.109.117.109
+
+How many packets does it take to receive the web page?
+11 packets -> on compte tous les PDU frames + le "OK"
